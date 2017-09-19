@@ -1,92 +1,330 @@
-git clone git@github.com:appserver-io/appserver.git ~/Workspace/appserver-io/appserver
-git clone git@github.com:appserver-io/appserver.git ~/Workspace/appserver-io/authenticator
-git clone git@github.com:appserver-io/build.git ~/Workspace/appserver-io/build
-git clone git@github.com:appserver-io/collections.git ~/Workspace/appserver-io/collections
-git clone git@github.com:appserver-io/concurrency.git ~/Workspace/appserver-io/concurrency
-git clone git@github.com:appserver-io/configuration.git ~/Workspace/appserver-io/configuration
-git clone git@github.com:appserver-io/description.git ~/Workspace/appserver-io/description
-git clone git@github.com:appserver-io/dnsserver.git ~/Workspace/appserver-io/dnsserver
-git clone git@github.com:appserver-io/doppelgaenger.git ~/Workspace/appserver-io/doppelgaenger
-git clone git@github.com:appserver-io/fastcgi.git ~/Workspace/appserver-io/fastcgi
-git clone git@github.com:appserver-io/http.git ~/Workspace/appserver-io/http
-git clone git@github.com:appserver-io/lang.git ~/Workspace/appserver-io/lang
-git clone git@github.com:appserver-io/logger.git ~/Workspace/appserver-io/logger
-git clone git@github.com:appserver-io/messaging.git ~/Workspace/appserver-io/messaging
-git clone git@github.com:appserver-io/microcron.git ~/Workspace/appserver-io/microcron
-git clone git@github.com:appserver-io/properties.git ~/Workspace/appserver-io/properties
-git clone git@github.com:appserver-io/pthreads-polyfill.git ~/Workspace/appserver-io/pthreads-polyfill
-git clone git@github.com:appserver-io/rmi.git ~/Workspace/appserver-io/rmi
-git clone git@github.com:appserver-io/robo-tasks.git ~/Workspace/appserver-io/robo-tasks
-git clone git@github.com:appserver-io/routlt.git ~/Workspace/appserver-io/routlt
-git clone git@github.com:appserver-io/routlt-project.git ~/Workspace/appserver-io/routlt-project
-git clone git@github.com:appserver-io/server.git ~/Workspace/appserver-io/server
-git clone git@github.com:appserver-io/single-app.git ~/Workspace/appserver-io/single-app
-git clone git@github.com:appserver-io/storage.git ~/Workspace/appserver-io/storage
-git clone git@github.com:appserver-io/webserver.git ~/Workspace/appserver-io/webserver
-git clone git@github.com:appserver-io-psr/application.git ~/Workspace/appserver-io/application
-git clone git@github.com:appserver-io-psr/auth.git ~/Workspace/appserver-io/auth
-git clone git@github.com:appserver-io-psr/context.git ~/Workspace/appserver-io/context
-git clone git@github.com:appserver-io-psr/deployment.git ~/Workspace/appserver-io/deployment
-git clone git@github.com:appserver-io-psr/di.git ~/Workspace/appserver-io/di
-git clone git@github.com:appserver-io-psr/epb.git ~/Workspace/appserver-io/epb
-git clone git@github.com:appserver-io-psr/http-message.git ~/Workspace/appserver-io/http-message
-git clone git@github.com:appserver-io-psr/mop.git ~/Workspace/appserver-io/mop
-git clone git@github.com:appserver-io-psr/naming.git ~/Workspace/appserver-io/naming
-git clone git@github.com:appserver-io-psr/pms.git ~/Workspace/appserver-io/pms
-git clone git@github.com:appserver-io-psr/security.git ~/Workspace/appserver-io/security
-git clone git@github.com:appserver-io-psr/servlet.git ~/Workspace/appserver-io/servlet
-git clone git@github.com:appserver-io-psr/socket.git ~/Workspace/appserver-io/socket
+#!/bin/bash
+#title			:setup-mac.sh
+#description	:This script configures appserver components
+#author 		:doellererm
+#date			:20170919
+#usage			:bash setup-mac.sh [force-login]
 
-cd ~/Workspace/appserver-io/appserver/var/tmp
-curl -O http://builds.appserver.io/mac/appserver-runtime_1.1.7-109_x86_64.tar.gz
-tar xvfz appserver-runtime_1.1.7-109_x86_64.tar.gz
-cp -R -f ~/Workspace/appserver-io/appserver/var/tmp/appserver/* ~/Workspace/appserver-io/appserver
+#####################
+### Configuration ###
+#####################
 
-ln -s ~/Workspace/appserver-io/appserver /opt/appserver
-cd /opt/appserver
+WORKSPACE_DIR="$HOME/workspace/appserver-sdk"
+APPSERVER_RUNTIME_VERSION="1.1.7-109_x86_64"
+SCRIPT_DIR=`pwd`
+
+# Components to configure
+COMPONENTS=(
+	'appserver-io/authenticator'
+	'appserver-io/build'
+	'appserver-io/collections'
+	'appserver-io/concurrency'
+	'appserver-io/configuration'
+	'appserver-io/description'
+	'appserver-io/dnsserver'
+	'appserver-io/doppelgaenger'
+	'appserver-io/fastcgi'
+	'appserver-io/http'
+	'appserver-io/lang'
+	'appserver-io/logger'
+	'appserver-io/messaging'
+	'appserver-io/microcron'
+	'appserver-io/properties'
+	'appserver-io/pthreads-polyfill'
+	'appserver-io/rmi'
+	'appserver-io/robo-tasks'
+	'appserver-io/routlt'
+	'appserver-io/routlt-project'
+	'appserver-io/server'
+	'appserver-io/single-app'
+	'appserver-io/storage'
+	'appserver-io/webserver'
+	'appserver-io-psr/application'
+	'appserver-io-psr/auth'
+	'appserver-io-psr/context'
+	'appserver-io-psr/deployment'
+	'appserver-io-psr/di'
+	'appserver-io-psr/epb'
+	'appserver-io-psr/http-message'
+	'appserver-io-psr/mop'
+	'appserver-io-psr/naming'
+	'appserver-io-psr/pms'
+	'appserver-io-psr/security'
+	'appserver-io-psr/servlet'
+	'appserver-io-psr/socket'
+)
+
+############################
+###	Function Definitions ###
+############################
+
+function clone {
+	if [[ -d $2 ]]
+		then
+		rm -rf $2
+	fi
+	git clone https://github.com/$1.git $2/
+}
+
+function fork {
+	cd $1
+	hub fork
+	git remote rm origin
+}
+
+function linkComponent {
+
+	removeComponent $1 $2
+
+	component=$1
+	pre1="appserver-io/"
+	pre2="appserver-io-psr/"
+
+	if [[ "$component" =~ ^"$pre1" ]]
+		then
+		cd $WORKSPACE_DIR/$GITHUB_USER/appserver/vendor/appserver-io/
+		ln -s ../../../$2/
+	else
+		if [[ "$component" =~ ^"$pre2" ]]
+			then
+			cd $WORKSPACE_DIR/$GITHUB_USER/appserver/vendor/appserver-io-psr/
+			ln -s ../../../$2/
+		fi
+	fi
+}
+
+function removeComponent {
+
+	component=$1
+	pre1="appserver-io/"
+	pre2="appserver-io-psr/"
+
+	if [[ "$component" =~ ^"$pre1" ]]
+		then
+		VENDOR="appserver-io"
+	else
+		if [[ "$component" =~ ^"$pre2" ]]
+			then
+			VENDOR="appserver-io-psr"
+		fi
+	fi
+
+	if [[ -d $WORKSPACE_DIR/$GITHUB_USER/appserver/vendor/$VENDOR/$2 ]]
+		then
+		rm -rf $WORKSPACE_DIR/$GITHUB_USER/appserver/vendor/$VENDOR/$2
+	fi
+}
+
+function getComponentShort {
+
+	component=$1
+	pre1="appserver-io/"
+	pre2="appserver-io-psr/"
+
+	if [[ "$component" =~ ^"$pre1" ]]
+		then
+		result=${component#$pre1}
+	else
+		if [[ "$component" =~ ^"$pre2" ]]
+			then
+			result=${component#$pre2}
+		fi
+	fi
+
+	echo "$result"
+}
+
+function installDependencies {
+	BREW_PATH=`which brew`
+	HUB_PATH=`which hub`
+	DEPENDENCIES=()
+
+	if [ -z "$BREW_PATH" ]
+		then
+		DEPENDENCIES+=('brew')
+	fi
+
+	if [ -z "$HUB_PATH" ]
+		then
+		DEPENDENCIES+=('hub')
+	fi
+
+	if [ ! ${#DEPENDENCIES[@]} -eq 0 ]
+		then
+		echo "The following dependencies have to be installed in order to be able to fork:"
+		echo ""
+
+		for dependency in "${DEPENDENCIES[@]}"
+		do
+			echo $dependency
+		done
+
+		echo ""
+		echo "Continue? (Press ENTER to continue, any other key to abort)"
+		read -s -n 1 continue3
+
+		if [ "${#continue3}" -eq 0 ]
+			then
+			if [ -z "$BREW_PATH" ]
+				then
+				/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+			fi
+
+			if [ -z "$HUB_PATH" ]
+				then
+				brew install hub
+			fi
+		fi
+	fi
+	
+}
+
+function installRuntime {
+	cd $WORKSPACE_DIR/$GITHUB_USER/appserver/var/tmp
+	curl -O http://builds.appserver.io/mac/appserver-runtime_$APPSERVER_RUNTIME_VERSION.tar.gz
+	tar xvfz appserver-runtime_$APPSERVER_RUNTIME_VERSION.tar.gz
+	cp -R -f $WORKSPACE_DIR/$GITHUB_USER/appserver/var/tmp/appserver/* $WORKSPACE_DIR/$GITHUB_USER/appserver
+	rm appserver-runtime_$APPSERVER_RUNTIME_VERSION.tar.gz
+	rm -rf appserver/
+	echo "$APPSERVER_RUNTIME_VERSION" > $WORKSPACE_DIR/$GITHUB_USER/appserver/var/tmp/runtime_version.properties
+}
+
+
+########################
+### Initialize setup ###
+########################
+
+echo ""
+echo '   ____ _____  ____  ________  ______   _____  _____(_)___  '
+echo '  / __ `/ __ \/ __ \/ ___/ _ \/ ___/ | / / _ \/ ___/ / __ \ '
+echo ' / /_/ / /_/ / /_/ (__  )  __/ /   | |/ /  __/ /  / / /_/ / '
+echo ' \__,_/ .___/ .___/____/\___/_/    |___/\___/_(_)/_/\____/  '
+echo '     /_/   /_/ '
+echo ""
+
+echo ""
+echo "This script will set up appserver-io/appserver and selected"
+echo "components as git repositories in the defined workspace."
+echo ""
+echo "Don't forget to have a look at the configuration segment of this script"
+echo "and verify that WORKSPACE_DIR and COMPONENTS are set correctly"
+echo ""
+echo "Please make sure that you don't have any unsaved changes in"
+echo ""
+echo "  $WORKSPACE_DIR"
+echo ""
+echo "Shall we begin? (Press ENTER to continue, any other key to abort)"
+read -s -n 1 begin
+
+if [ ! "${#begin}" -eq 0 ]
+	then
+	exit
+fi
+
+echo ""
+echo "Please enter your Github username: "
+read GITHUB_USER
+
+if [ -z "$GITHUB_USER" ]
+	then
+	echo "Github username must not be empty"
+	exit
+fi
+
+if [[ -f "$HOME/.config/hub" ]] && [[ "$1" = "force-login" ]]
+	then
+	rm $HOME/.config/hub
+fi
+
+echo ""
+echo "The following repositories will be cloned:"
+for componentFQDN in "${COMPONENTS[@]}"
+do
+	echo $componentFQDN
+done
+echo ""
+echo "Continue? (Press ENTER to continue, any other key to abort)"
+read -s -n 1 continue1
+
+if [ ! "${#continue1}" -eq 0 ]
+	then
+	echo "Aborting ..."
+	exit
+fi
+
+echo ""
+echo "Working on appserver sources requires you to fork its repositories to your github account."
+echo "Do you want to fork these sources now? (Press ENTER to continue, any other key to skip)"
+read -s -n 1 forkNow
+
+mkdir -p $WORKSPACE_DIR/$GITHUB_USER && cd $WORKSPACE_DIR/$GITHUB_USER
+
+if [ "${#forkNow}" -eq 0 ]
+	then
+	installDependencies
+	clone appserver-io/appserver $WORKSPACE_DIR/$GITHUB_USER/appserver
+	fork $WORKSPACE_DIR/$GITHUB_USER/appserver
+else
+	clone $GITHUB_USER/appserver $WORKSPACE_DIR/$GITHUB_USER/appserver
+fi
+
+cd $WORKSPACE_DIR/$GITHUB_USER/appserver
 composer install --ignore-platform-reqs
 
-rm -rf ~/Workspace/appserver-io/appserver/vendor/appserver-io/*
-cd ~/Workspace/appserver-io/appserver/vendor/appserver-io
-ln -s ../../../authenticator
-ln -s ../../../build
-ln -s ../../../collections
-ln -s ../../../concurrency
-ln -s ../../../configuration
-ln -s ../../../description
-ln -s ../../../dnsserver
-ln -s ../../../doppelgaenger
-ln -s ../../../fastcgi
-ln -s ../../../http
-ln -s ../../../lang
-ln -s ../../../logger
-ln -s ../../../messaging
-ln -s ../../../microcron
-ln -s ../../../properties
-ln -s ../../../pthreads
-ln -s ../../../rmi
-ln -s ../../../robo-tasks
-ln -s ../../../routlt
-ln -s ../../../routlt
-ln -s ../../../server
-ln -s ../../../single-app
-ln -s ../../../storage
-ln -s ../../../webserver
+for componentFQDN in "${COMPONENTS[@]}"
+do
+	cd $WORKSPACE_DIR
+	componentShort=$(getComponentShort $componentFQDN)
+	if [ "${#forkNow}" -eq 0 ]
+		then
+		clone $componentFQDN $WORKSPACE_DIR/$GITHUB_USER/$componentShort
+		fork $WORKSPACE_DIR/$GITHUB_USER/$componentShort/
+	else
+		clone $GITHUB_USER/$componentShort $WORKSPACE_DIR/$GITHUB_USER/$componentShort
+	fi
+	linkComponent $componentFQDN $componentShort
+done
 
-rm -rf ~/Workspace/appserver-io/appserver/vendor/appserver-io-psr/*
-cd ~/Workspace/appserver-io/appserver/vendor/appserver-io-psr
-ln -s ../../../application
-ln -s ../../../auth
-ln -s ../../../context
-ln -s ../../../deployment
-ln -s ../../../di
-ln -s ../../../epb
-ln -s ../../../http-message
-ln -s ../../../mop
-ln -s ../../../naming
-ln -s ../../../pms
-ln -s ../../../security
-ln -s ../../../servlet
-ln -s ../../../socket
+if [[ ! -f $WORKSPACE_DIR/$GITHUB_USER/appserver/var/tmp/runtime_version.properties ]]
+	then
+	installRuntime
+else
+	RT=`cat $WORKSPACE_DIR/$GITHUB_USER/appserver/var/tmp/runtime_version.properties`
+	if [[ "$RT" = "$APPSERVER_RUNTIME_VERSION" ]]
+		then
+		echo "[INFO] Runtime already up to date, skipping setup"
+	else
+		installRuntime
+	fi
+fi
 
-# Symlink sbin/appserver/appserverctl
+echo "Creating symlink to /opt/appserver"
+if [[ -L /opt/appserver ]]
+	then
+	sudo rm /opt/appserver
+else
+	if [[ -d /opt/appserver ]]
+		then
+		echo "[ERROR] Directory '/opt/appserver/' already exists but has to be removed in order to continue"
+		echo "Please make sure you do not have any important files in '/opt/appserver/'"
+		echo ""
+		echo "Continue? (Press ENTER to continue, any other key to abort)"
+		read -s -n 1 continue2
+
+		if [ ! "${#continue1}" -eq 0 ]
+			then
+			echo "Aborting ..."
+			exit
+		fi
+		sudo rm -rf /opt/appserver
+	fi
+fi
+
+sudo ln -s $WORKSPACE_DIR/$GITHUB_USER/appserver/ /opt
+
+cp -R $SCRIPT_DIR/sbin $WORKSPACE_DIR/$GITHUB_USER/appserver
+
+echo ""
+echo "Setup complete. The configured repositories are accessable under '$WORKSPACE_DIR/$GITHUB_USER'."
+echo "You may now start the appserver with '/opt/appserver/sbin/appserverctl start'"
+echo ""
