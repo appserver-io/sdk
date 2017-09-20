@@ -322,7 +322,11 @@ fi
 
 sudo ln -s $WORKSPACE_DIR/$GITHUB_USER/appserver/ /opt
 
-cp -R $SCRIPT_DIR/sbin $WORKSPACE_DIR/$GITHUB_USER/appserver
+cp -R $SCRIPT_DIR/sbin/* $WORKSPACE_DIR/$GITHUB_USER/appserver/sbin/
+cp -R $SCRIPT_DIR/bin/* $WORKSPACE_DIR/$GITHUB_USER/appserver/bin/
+
+USER=`whoami`
+sed -i -e "s/<param name=\"user\" type=\"string\">_www/<param name=\"user\" type=\"string\">$USER/g" $WORKSPACE_DIR/$GITHUB_USER/appserver/etc/appserver/appserver.xml
 
 echo ""
 echo "Setup complete. The configured repositories are accessable under '$WORKSPACE_DIR/$GITHUB_USER'."
