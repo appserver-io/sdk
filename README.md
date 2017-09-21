@@ -24,7 +24,13 @@ WORKSPACE_DIR="$HOME/workspace/appserver-sdk"
 # Please change if you run the script from a different directory
 SCRIPT_DIR=`pwd`
 
-# Array of components you want to work on
+# The build version of the runtime which will be installed
+APPSERVER_RUNTIME_VERSION="1.1.7-109_x86_64"
+
+# vendor/name:branch of the appserver repository
+APPSERVER_REPOSITORY="appserver-io/appserver:1.1"
+
+# Array of components to configure (vendor/name:branch)
 # Just comment out or remove entries you don't need
 COMPONENTS=(
     'appserver-io/authenticator'
@@ -37,21 +43,9 @@ APPSERVER_RUNTIME_VERSION="1.1.7-109_x86_64"
 ```
 
 ### Usage
-Once you configured the script to fit your needs, just start it up. No parameters required.
+When you are done configuring the script to fit your needs, just start it up. No parameters required.
 
 ```bash
 $ cd /path/to/sdk
 $ ./setup-mac.sh
 ```
-You will be asked to enter your Github Username and whether or not you want to fork the selected repositories to your Github account automatically.
-
-> Please note that you need to fork every repository you are working on to your Github account in oder to be able to create Pull Requests. If you chose to neither use the built in functionality nor fork them manually, this setup script might not behave as expected as it relies on you having the repositories forked to your account.
-
-If you are experiencing any issues with the built in 'auto-fork' functionality concerning authentication with your Github account, you may try to start the script using the parameter 'force-login'
-
-```bash
-$ ./setup-mac.sh force-login
-```
-
-This will remove the OAuth secret stored in ~/.config/hub and force you to enter your Github credentials again.
-Find out more about Github OAuth tokens: [![Personal API Tokens](https://github.com/blog/1509-personal-api-tokens)](https://github.com/blog/1509-personal-api-tokens)
