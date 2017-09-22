@@ -268,7 +268,7 @@ cp -R $SCRIPT_DIR/sbin/* $WORKSPACE_DIR/appserver/sbin/
 cp -R $SCRIPT_DIR/bin/* $WORKSPACE_DIR/appserver/bin/
 
 USER=`whoami`
-sed -i -e "s/<param name=\"user\" type=\"string\">_www/<param name=\"user\" type=\"string\">$USER/g" $WORKSPACE_DIR/appserver/etc/appserver/appserver.xml
+sed -i '' -e "s/<param name=\"user\" type=\"string\">_www/<param name=\"user\" type=\"string\">$USER/g" $WORKSPACE_DIR/appserver/etc/appserver/appserver.xml
 
 echo ""
 echo "Setup complete. The configured repositories are accessable under '$WORKSPACE_DIR'."
