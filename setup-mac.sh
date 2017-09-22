@@ -227,7 +227,7 @@ clone $APPSERVER_REPOSITORY $WORKSPACE_DIR/appserver
 cd $WORKSPACE_DIR/appserver
 git checkout -b 1.1 origin/1.1
 
-composer install --ignore-platform-reqs
+composer install
 
 for full in "${COMPONENTS[@]}"
 do
