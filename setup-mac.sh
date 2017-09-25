@@ -72,14 +72,14 @@ function clone {
 	componentBranch=$(getComponentBranch $1)
 	component=$(removeBranchVersion $1)
 
-	if ! git clone https://github.com/$component.git $2/
+	if ! git clone https://github.com/$component.git "$2/"
 		then
 		return
 	fi
 
 	if [[ ! "$componentBranch" = "" ]]
 		then
-		cd $2
+		cd "$2"
 		git checkout -b $componentBranch origin/$componentBranch
 	fi
 }
@@ -94,12 +94,12 @@ function linkComponent {
 
 	if [[ "$component" =~ ^"$pre1" ]]
 		then
-		cd $WORKSPACE_DIR/appserver/vendor/appserver-io/
+		cd "$WORKSPACE_DIR/appserver/vendor/appserver-io/"
 		ln -s ../../../$2/
 	else
 		if [[ "$component" =~ ^"$pre2" ]]
 			then
-			cd $WORKSPACE_DIR/appserver/vendor/appserver-io-psr/
+			cd "$WORKSPACE_DIR/appserver/vendor/appserver-io-psr/"
 			ln -s ../../../$2/
 		fi
 	fi
@@ -121,9 +121,9 @@ function removeComponent {
 		fi
 	fi
 
-	if [[ -d $WORKSPACE_DIR/appserver/vendor/$VENDOR/$2 ]]
+	if [[ -d "$WORKSPACE_DIR/appserver/vendor/$VENDOR/$2" ]]
 		then
-		rm -rf $WORKSPACE_DIR/appserver/vendor/$VENDOR/$2
+		rm -rf "$WORKSPACE_DIR/appserver/vendor/$VENDOR/$2"
 	fi
 }
 
@@ -164,19 +164,30 @@ function getComponentBranch {
 }
 
 function installRuntime {
-	cd $WORKSPACE_DIR/appserver/var/tmp
+	cd "$WORKSPACE_DIR/appserver/var/tmp"
 	curl -O http://builds.appserver.io/mac/appserver-runtime_$APPSERVER_RUNTIME_VERSION.tar.gz
 	tar xfz appserver-runtime_$APPSERVER_RUNTIME_VERSION.tar.gz
-	cp -R -f $WORKSPACE_DIR/appserver/var/tmp/appserver/* $WORKSPACE_DIR/appserver
+	cp -R -f "$WORKSPACE_DIR/appserver/var/tmp/appserver/"* "$WORKSPACE_DIR/appserver"
 	rm appserver-runtime_$APPSERVER_RUNTIME_VERSION.tar.gz
 	rm -rf appserver/
-	echo "$APPSERVER_RUNTIME_VERSION" > $WORKSPACE_DIR/appserver/var/tmp/runtime_version.properties
+	echo "$APPSERVER_RUNTIME_VERSION" > "$WORKSPACE_DIR/appserver/var/tmp/runtime_version.properties"
 }
 
 
 ########################
 ### Initialize setup ###
 ########################
+
+if [[ $1 == "--workspace-dir"* ]]
+	then
+	if [[ $1 = "--workspace-dir" ]] && [[ ! $2 = "" ]]
+		then
+		WORKSPACE_DIR=$2
+	else
+		pre="--workspace-dir="
+		WORKSPACE_DIR=${1#$pre}
+	fi
+fi
 
 echo ""
 echo '   ____ _____  ____  ________  ______   _____  _____(_)___  '
@@ -195,7 +206,7 @@ echo "and verify that WORKSPACE_DIR and COMPONENTS are set correctly"
 echo ""
 echo "Please make sure that you don't have any unsaved changes in"
 echo ""
-echo "  $WORKSPACE_DIR"
+echo "  '$WORKSPACE_DIR'"
 echo ""
 echo "Shall we begin? (Press ENTER to continue, any other key to abort)"
 read -s -n 1 begin
@@ -222,19 +233,19 @@ if [ ! "${#continue1}" -eq 0 ]
 	exit
 fi
 
-clone $APPSERVER_REPOSITORY $WORKSPACE_DIR/appserver
+clone $APPSERVER_REPOSITORY "$WORKSPACE_DIR/appserver"
 
-cd $WORKSPACE_DIR/appserver
+cd "$WORKSPACE_DIR/appserver"
 git checkout -b 1.1 origin/1.1
 
 composer install
 
 for full in "${COMPONENTS[@]}"
 do
-	cd $WORKSPACE_DIR
+	cd "$WORKSPACE_DIR"
 	componentFQDN=$(removeBranchVersion $full)
 	componentShort=$(getComponentShort $full)
-	clone $full $WORKSPACE_DIR/$componentShort
+	clone $full "$WORKSPACE_DIR/$componentShort"
 	linkComponent $componentFQDN $componentShort
 done
 
@@ -262,13 +273,13 @@ else
 	fi
 fi
 
-sudo ln -s $WORKSPACE_DIR/appserver/ /opt
+sudo ln -s "$WORKSPACE_DIR/appserver/" /opt
 
-cp -R $SCRIPT_DIR/sbin/* $WORKSPACE_DIR/appserver/sbin/
-cp -R $SCRIPT_DIR/bin/* $WORKSPACE_DIR/appserver/bin/
+cp -R "$SCRIPT_DIR/sbin/"* "$WORKSPACE_DIR/appserver/sbin/"
+cp -R "$SCRIPT_DIR/bin/"* "$WORKSPACE_DIR/appserver/bin/"
 
 USER=`whoami`
-sed -i '' -e "s/<param name=\"user\" type=\"string\">_www/<param name=\"user\" type=\"string\">$USER/g" $WORKSPACE_DIR/appserver/etc/appserver/appserver.xml
+sed -i '' -e "s/<param name=\"user\" type=\"string\">_www/<param name=\"user\" type=\"string\">$USER/g" "$WORKSPACE_DIR/appserver/etc/appserver/appserver.xml"
 
 echo ""
 echo "Setup complete. The configured repositories are accessable under '$WORKSPACE_DIR'."
