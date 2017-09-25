@@ -49,3 +49,9 @@ When you are done configuring the script to fit your needs, just start it up. No
 $ cd /path/to/sdk
 $ ./setup-mac.sh
 ```
+
+To overwrite the workspace directory via commandline, simply type
+
+```bash
+$ ./setup-mac.sh --workspace-dir="/Path/To/Workspace/"
+```
