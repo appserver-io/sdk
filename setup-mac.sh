@@ -1,92 +1,289 @@
-git clone git@github.com:appserver-io/appserver.git ~/Workspace/appserver-io/appserver
-git clone git@github.com:appserver-io/appserver.git ~/Workspace/appserver-io/authenticator
-git clone git@github.com:appserver-io/build.git ~/Workspace/appserver-io/build
-git clone git@github.com:appserver-io/collections.git ~/Workspace/appserver-io/collections
-git clone git@github.com:appserver-io/concurrency.git ~/Workspace/appserver-io/concurrency
-git clone git@github.com:appserver-io/configuration.git ~/Workspace/appserver-io/configuration
-git clone git@github.com:appserver-io/description.git ~/Workspace/appserver-io/description
-git clone git@github.com:appserver-io/dnsserver.git ~/Workspace/appserver-io/dnsserver
-git clone git@github.com:appserver-io/doppelgaenger.git ~/Workspace/appserver-io/doppelgaenger
-git clone git@github.com:appserver-io/fastcgi.git ~/Workspace/appserver-io/fastcgi
-git clone git@github.com:appserver-io/http.git ~/Workspace/appserver-io/http
-git clone git@github.com:appserver-io/lang.git ~/Workspace/appserver-io/lang
-git clone git@github.com:appserver-io/logger.git ~/Workspace/appserver-io/logger
-git clone git@github.com:appserver-io/messaging.git ~/Workspace/appserver-io/messaging
-git clone git@github.com:appserver-io/microcron.git ~/Workspace/appserver-io/microcron
-git clone git@github.com:appserver-io/properties.git ~/Workspace/appserver-io/properties
-git clone git@github.com:appserver-io/pthreads-polyfill.git ~/Workspace/appserver-io/pthreads-polyfill
-git clone git@github.com:appserver-io/rmi.git ~/Workspace/appserver-io/rmi
-git clone git@github.com:appserver-io/robo-tasks.git ~/Workspace/appserver-io/robo-tasks
-git clone git@github.com:appserver-io/routlt.git ~/Workspace/appserver-io/routlt
-git clone git@github.com:appserver-io/routlt-project.git ~/Workspace/appserver-io/routlt-project
-git clone git@github.com:appserver-io/server.git ~/Workspace/appserver-io/server
-git clone git@github.com:appserver-io/single-app.git ~/Workspace/appserver-io/single-app
-git clone git@github.com:appserver-io/storage.git ~/Workspace/appserver-io/storage
-git clone git@github.com:appserver-io/webserver.git ~/Workspace/appserver-io/webserver
-git clone git@github.com:appserver-io-psr/application.git ~/Workspace/appserver-io/application
-git clone git@github.com:appserver-io-psr/auth.git ~/Workspace/appserver-io/auth
-git clone git@github.com:appserver-io-psr/context.git ~/Workspace/appserver-io/context
-git clone git@github.com:appserver-io-psr/deployment.git ~/Workspace/appserver-io/deployment
-git clone git@github.com:appserver-io-psr/di.git ~/Workspace/appserver-io/di
-git clone git@github.com:appserver-io-psr/epb.git ~/Workspace/appserver-io/epb
-git clone git@github.com:appserver-io-psr/http-message.git ~/Workspace/appserver-io/http-message
-git clone git@github.com:appserver-io-psr/mop.git ~/Workspace/appserver-io/mop
-git clone git@github.com:appserver-io-psr/naming.git ~/Workspace/appserver-io/naming
-git clone git@github.com:appserver-io-psr/pms.git ~/Workspace/appserver-io/pms
-git clone git@github.com:appserver-io-psr/security.git ~/Workspace/appserver-io/security
-git clone git@github.com:appserver-io-psr/servlet.git ~/Workspace/appserver-io/servlet
-git clone git@github.com:appserver-io-psr/socket.git ~/Workspace/appserver-io/socket
+#!/bin/bash
+#title			:setup-mac.sh
+#description	:This script configures appserver components
+#author 		:Marcus Döllerer
+#date			:20170919
+#usage			:bash setup-mac.sh
 
-cd ~/Workspace/appserver-io/appserver/var/tmp
-curl -O http://builds.appserver.io/mac/appserver-runtime_1.1.7-109_x86_64.tar.gz
-tar xvfz appserver-runtime_1.1.7-109_x86_64.tar.gz
-cp -R -f ~/Workspace/appserver-io/appserver/var/tmp/appserver/* ~/Workspace/appserver-io/appserver
+#####################
+### Configuration ###
+#####################
 
-ln -s ~/Workspace/appserver-io/appserver /opt/appserver
-cd /opt/appserver
-composer install --ignore-platform-reqs
+# Directory to which the selected repositories will be cloned
+WORKSPACE_DIR="$HOME/workspace/appserver-sdk"
 
-rm -rf ~/Workspace/appserver-io/appserver/vendor/appserver-io/*
-cd ~/Workspace/appserver-io/appserver/vendor/appserver-io
-ln -s ../../../authenticator
-ln -s ../../../build
-ln -s ../../../collections
-ln -s ../../../concurrency
-ln -s ../../../configuration
-ln -s ../../../description
-ln -s ../../../dnsserver
-ln -s ../../../doppelgaenger
-ln -s ../../../fastcgi
-ln -s ../../../http
-ln -s ../../../lang
-ln -s ../../../logger
-ln -s ../../../messaging
-ln -s ../../../microcron
-ln -s ../../../properties
-ln -s ../../../pthreads
-ln -s ../../../rmi
-ln -s ../../../robo-tasks
-ln -s ../../../routlt
-ln -s ../../../routlt
-ln -s ../../../server
-ln -s ../../../single-app
-ln -s ../../../storage
-ln -s ../../../webserver
+# Path to the sdk
+# Please change if you run the script from a different directory
+SCRIPT_DIR=`pwd`
 
-rm -rf ~/Workspace/appserver-io/appserver/vendor/appserver-io-psr/*
-cd ~/Workspace/appserver-io/appserver/vendor/appserver-io-psr
-ln -s ../../../application
-ln -s ../../../auth
-ln -s ../../../context
-ln -s ../../../deployment
-ln -s ../../../di
-ln -s ../../../epb
-ln -s ../../../http-message
-ln -s ../../../mop
-ln -s ../../../naming
-ln -s ../../../pms
-ln -s ../../../security
-ln -s ../../../servlet
-ln -s ../../../socket
+# The build version of the runtime which will be installed
+APPSERVER_RUNTIME_VERSION="1.1.7-109_x86_64"
 
-# Symlink sbin/appserver/appserverctl
+# vendor/name:branch of the appserver repository
+APPSERVER_REPOSITORY="appserver-io/appserver:1.1"
+
+# Array of components to configure (vendor/name:branch)
+# Just comment out or remove entries you don't need
+COMPONENTS=(
+	'appserver-io/authenticator'
+	'appserver-io/build'
+	'appserver-io/collections'
+	'appserver-io/concurrency'
+	'appserver-io/configuration'
+	'appserver-io/description'
+	'appserver-io/dnsserver'
+	'appserver-io/doppelgaenger'
+	'appserver-io/fastcgi'
+	'appserver-io/http'
+	'appserver-io/lang:3.0'
+	'appserver-io/logger'
+	'appserver-io/messaging'
+	'appserver-io/microcron'
+	'appserver-io/properties'
+	'appserver-io/pthreads-polyfill'
+	'appserver-io/rmi'
+	'appserver-io/robo-tasks'
+	'appserver-io/routlt'
+	'appserver-io/routlt-project'
+	'appserver-io/server'
+	'appserver-io/single-app'
+	'appserver-io/storage'
+	'appserver-io/webserver'
+	'appserver-io-psr/application'
+	'appserver-io-psr/auth'
+	'appserver-io-psr/context'
+	'appserver-io-psr/deployment'
+	'appserver-io-psr/di'
+	'appserver-io-psr/epb'
+	'appserver-io-psr/http-message'
+	'appserver-io-psr/mop'
+	'appserver-io-psr/naming'
+	'appserver-io-psr/pms'
+	'appserver-io-psr/security'
+	'appserver-io-psr/servlet'
+	'appserver-io-psr/socket'
+)
+
+############################
+###	Function Definitions ###
+############################
+
+function clone {
+	componentBranch=$(getComponentBranch $1)
+	component=$(removeBranchVersion $1)
+
+	if ! git clone https://github.com/$component.git "$2/"
+		then
+		return
+	fi
+
+	if [[ ! "$componentBranch" = "" ]]
+		then
+		cd "$2"
+		git checkout -b $componentBranch origin/$componentBranch
+	fi
+}
+
+function linkComponent {
+
+	removeComponent $1 $2
+
+	component=$1
+	pre1="appserver-io/"
+	pre2="appserver-io-psr/"
+
+	if [[ "$component" =~ ^"$pre1" ]]
+		then
+		cd "$WORKSPACE_DIR/appserver/vendor/appserver-io/"
+		ln -s ../../../$2/
+	else
+		if [[ "$component" =~ ^"$pre2" ]]
+			then
+			cd "$WORKSPACE_DIR/appserver/vendor/appserver-io-psr/"
+			ln -s ../../../$2/
+		fi
+	fi
+}
+
+function removeComponent {
+
+	component=$1
+	pre1="appserver-io/"
+	pre2="appserver-io-psr/"
+
+	if [[ "$component" =~ ^"$pre1" ]]
+		then
+		VENDOR="appserver-io"
+	else
+		if [[ "$component" =~ ^"$pre2" ]]
+			then
+			VENDOR="appserver-io-psr"
+		fi
+	fi
+
+	if [[ -d "$WORKSPACE_DIR/appserver/vendor/$VENDOR/$2" ]]
+		then
+		rm -rf "$WORKSPACE_DIR/appserver/vendor/$VENDOR/$2"
+	fi
+}
+
+function removeBranchVersion {
+	componentBranch=$(getComponentBranch $1)
+	suffix=":$componentBranch"
+	result=${1%$suffix}
+	echo "$result"
+}
+
+function getComponentShort {
+
+	component=$1
+	pre1="appserver-io/"
+	pre2="appserver-io-psr/"
+
+	if [[ "$component" =~ ^"$pre1" ]]
+		then
+		result=${component#$pre1}
+	else
+		if [[ "$component" =~ ^"$pre2" ]]
+			then
+			result=${component#$pre2}
+		fi
+	fi
+
+	result=$(removeBranchVersion $result)
+	echo "$result"
+}
+
+function getComponentBranch {
+	result=`cut -d ":" -f 2 <<< "$1"`
+	if [[ "$result" = "$1" ]]
+		then
+		result=""
+	fi
+	echo "$result"
+}
+
+function installRuntime {
+	cd "$WORKSPACE_DIR/appserver/var/tmp"
+	curl -O http://builds.appserver.io/mac/appserver-runtime_$APPSERVER_RUNTIME_VERSION.tar.gz
+	tar xfz appserver-runtime_$APPSERVER_RUNTIME_VERSION.tar.gz
+	cp -R -f "$WORKSPACE_DIR/appserver/var/tmp/appserver/"* "$WORKSPACE_DIR/appserver"
+	rm appserver-runtime_$APPSERVER_RUNTIME_VERSION.tar.gz
+	rm -rf appserver/
+	echo "$APPSERVER_RUNTIME_VERSION" > "$WORKSPACE_DIR/appserver/var/tmp/runtime_version.properties"
+}
+
+
+########################
+### Initialize setup ###
+########################
+
+if [[ $1 == "--workspace-dir"* ]]
+	then
+	if [[ $1 = "--workspace-dir" ]] && [[ ! $2 = "" ]]
+		then
+		WORKSPACE_DIR=$2
+	else
+		pre="--workspace-dir="
+		WORKSPACE_DIR=${1#$pre}
+	fi
+fi
+
+WORKSPACE_DIR="${WORKSPACE_DIR/#\~/$HOME}"
+
+echo ""
+echo '   ____ _____  ____  ________  ______   _____  _____(_)___  '
+echo '  / __ `/ __ \/ __ \/ ___/ _ \/ ___/ | / / _ \/ ___/ / __ \ '
+echo ' / /_/ / /_/ / /_/ (__  )  __/ /   | |/ /  __/ /  / / /_/ / '
+echo ' \__,_/ .___/ .___/____/\___/_/    |___/\___/_(_)/_/\____/  '
+echo '     /_/   /_/ '
+echo ""
+
+echo ""
+echo "This script will set up appserver-io/appserver and selected"
+echo "components as git repositories in the defined workspace."
+echo ""
+echo "Don't forget to have a look at the configuration segment of this script"
+echo "and verify that WORKSPACE_DIR and COMPONENTS are set correctly"
+echo ""
+echo "Please make sure that you don't have any unsaved changes in"
+echo ""
+echo "  '$WORKSPACE_DIR'"
+echo ""
+echo "Shall we begin? (Press ENTER to continue, any other key to abort)"
+read -s -n 1 begin
+
+if [ ! "${#begin}" -eq 0 ]
+	then
+	exit
+fi
+
+echo ""
+echo "The following repositories will be cloned:"
+echo "$APPSERVER_REPOSITORY"
+for full in "${COMPONENTS[@]}"
+do
+	echo $full
+done
+echo ""
+echo "Continue? (Press ENTER to continue, any other key to abort)"
+read -s -n 1 continue1
+
+if [ ! "${#continue1}" -eq 0 ]
+	then
+	echo "Aborting ..."
+	exit
+fi
+
+clone $APPSERVER_REPOSITORY "$WORKSPACE_DIR/appserver"
+
+cd "$WORKSPACE_DIR/appserver"
+git checkout -b 1.1 origin/1.1
+
+composer install
+
+for full in "${COMPONENTS[@]}"
+do
+	cd "$WORKSPACE_DIR"
+	componentFQDN=$(removeBranchVersion $full)
+	componentShort=$(getComponentShort $full)
+	clone $full "$WORKSPACE_DIR/$componentShort"
+	linkComponent $componentFQDN $componentShort
+done
+
+installRuntime
+
+echo "Creating symlink to /opt/appserver"
+if [[ -L /opt/appserver ]]
+	then
+	sudo rm /opt/appserver
+else
+	if [[ -d /opt/appserver ]]
+		then
+		echo "[ERROR] Directory '/opt/appserver/' already exists but has to be removed in order to continue"
+		echo "Please make sure you do not have any important files in '/opt/appserver/'"
+		echo ""
+		echo "Continue? (Press ENTER to continue, any other key to abort)"
+		read -s -n 1 continue2
+
+		if [ ! "${#continue1}" -eq 0 ]
+			then
+			echo "Aborting ..."
+			exit
+		fi
+		sudo rm -rf /opt/appserver
+	fi
+fi
+
+sudo ln -s "$WORKSPACE_DIR/appserver/" /opt
+
+cp -R "$SCRIPT_DIR/sbin/"* "$WORKSPACE_DIR/appserver/sbin/"
+cp -R "$SCRIPT_DIR/bin/"* "$WORKSPACE_DIR/appserver/bin/"
+
+USER=`whoami`
+sed -i '' -e "s/<param name=\"user\" type=\"string\">_www/<param name=\"user\" type=\"string\">$USER/g" "$WORKSPACE_DIR/appserver/etc/appserver/appserver.xml"
+
+echo ""
+echo "Setup complete. The configured repositories are accessable under '$WORKSPACE_DIR'."
+echo "You may now start the appserver with '/opt/appserver/sbin/appserverctl start'"
+echo ""
