@@ -189,6 +189,8 @@ if [[ $1 == "--workspace-dir"* ]]
 	fi
 fi
 
+WORKSPACE_DIR="${WORKSPACE_DIR/#\~/$HOME}"
+
 echo ""
 echo '   ____ _____  ____  ________  ______   _____  _____(_)___  '
 echo '  / __ `/ __ \/ __ \/ ___/ _ \/ ___/ | / / _ \/ ___/ / __ \ '
