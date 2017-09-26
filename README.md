@@ -43,6 +43,8 @@ APPSERVER_RUNTIME_VERSION="1.1.7-109_x86_64"
 ```
 
 ### Usage
+Before running this script, please make sure you have the corresponding PHP version installed. For example, appserver version 1.1 or earlier will require PHP versions `">=5.5.0 < 7.0.0"`
+
 When you are done configuring the script to fit your needs, just start it up. No parameters required.
 
 ```bash
