@@ -17,7 +17,7 @@ WORKSPACE_DIR="$HOME/workspace/appserver-sdk"
 SCRIPT_DIR=`pwd`
 
 # The build version of the runtime which will be installed
-APPSERVER_RUNTIME_VERSION="1.1.7-109_x86_64"
+APPSERVER_RUNTIME_VERSION="1.1.9-118_x86_64"
 
 # vendor/name:branch of the appserver repository
 APPSERVER_REPOSITORY="appserver-io/appserver:1.1"
@@ -49,6 +49,8 @@ COMPONENTS=(
 	'appserver-io/single-app'
 	'appserver-io/storage'
 	'appserver-io/webserver'
+	'appserver-io/robo-tasks'
+	'appserver-io/provisioning'
 	'appserver-io-psr/application'
 	'appserver-io-psr/auth'
 	'appserver-io-psr/context'
@@ -62,6 +64,8 @@ COMPONENTS=(
 	'appserver-io-psr/security'
 	'appserver-io-psr/servlet'
 	'appserver-io-psr/socket'
+	'appserver-io-psr/cli'
+	'appserver-io-psr/application-server'
 )
 
 ############################
